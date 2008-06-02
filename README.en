@@ -92,6 +92,14 @@ test at the first.
 
 Happy testing!!
 
+== Key bindings
+
+: C-cC-t
+   Runs test.
+
+: C-cT
+   Runs test. A test result is showed in a new frame.
+
 == Customize variables
 
 : run-test-file-names
