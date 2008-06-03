@@ -28,7 +28,11 @@ An Emacs-Lisp which suports running tests.
 
 == Install
 
-  % sudo ...
+  % sudo ./install.sh
+
+== Uninstall
+
+  % sudo ./uninstall.sh
 
 == Usage
 

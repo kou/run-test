@@ -28,7 +28,11 @@ GPL
 
 == インストール
 
-  % sudo ...
+  % sudo ./install.sh
+
+== アンインストール
+
+  % sudo ./uninstall.sh
 
 == 使い方
 
