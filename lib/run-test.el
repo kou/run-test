@@ -2,6 +2,9 @@
 (require 'compile)
 (require 'ansi-color)
 
+(defconst run-test-version "0.0.1"
+  "Version numbers of this version of run-test.el.")
+
 (defvar run-test-suffixes '("" ".scm" ".rb" ".py" ".sh")
   "List of test file suffix.")
 
