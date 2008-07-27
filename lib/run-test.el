@@ -55,10 +55,16 @@
                  (flatten (cdr lst))))
         (t (cons (car lst) (flatten (cdr lst))))))
 
+(defun string-strip (string)
+  (replace-regexp-in-string "\\(^\s*\\|\s*$\\)"
+                            ""
+                            string))
+
 (defun run-test-get-verbose-level-arg (num)
   (let ((elem (assoc num run-test-verbose-level-table)))
-    (concat " "
-            (if elem (cdr elem) ""))))
+    (if elem
+        (string-strip (concat " " (cdr elem)))
+      "")))
 
 (defun run-test-executable-file-p (file)
   (and (file-executable-p test-file)
