@@ -35,18 +35,22 @@
 (defvar run-test-mode-line-color-change-time 5
   "Time to show test result as mode line color.")
 
-(defvar run-test-last-output-start nil)
-(defvar run-test-last-output-start-position nil)
 (defvar run-test-last-output-in-progress nil)
 (defvar run-test-output-status nil)
 (defvar run-test-original-mode-line-color nil)
 (defvar run-test-restoring-original-mode-line-color 0)
 
+(defvar run-test-finish-functions nil
+  "Functions to call when a run-test process finishes.
+Each function is called with two arguments: the run-test buffer,
+and a string describing how the process finished.")
+
 (define-compilation-mode run-test-mode "run-test" "run-test-mode"
-  (set (make-local-variable 'run-test-last-output-start) (make-marker))
-  (set (make-local-variable 'run-test-last-output-start-position) 1)
   (set (make-local-variable 'run-test-last-output-in-progress) t)
-  (set (make-local-variable 'run-test-output-status) 'success))
+  (set (make-local-variable 'run-test-output-status) 'success)
+  (set (make-local-variable 'compilation-disable-input) t)
+  (set (make-local-variable 'compilation-process-setup-function)
+       'run-test-setup-buffer))
 
 (defun flatten (lst)
   (cond ((null lst) '())
@@ -117,12 +121,22 @@
              t)))
         (t (run-test-if-find (cdr test-file-infos) verbose-arg runner))))
 
+(defun run-test-setup-buffer ()
+  (make-local-variable 'compilation-filter-hook)
+  (add-hook 'compilation-filter-hook
+            '(lambda ()
+               (let ((min (point-min-marker))
+                     (max (point-max-marker)))
+                 (ansi-color-apply-on-region min max)
+                 (run-test-update-mode-line (buffer-substring min max))))))
+
 (defun run-test (&optional arg)
   (interactive "P")
-  (run-test-if-find (run-test-find-test-files)
-                    (run-test-get-verbose-level-arg (prefix-numeric-value arg))
-                    (lambda (command)
-                      (compilation-start command 'run-test-mode))))
+  (run-test-if-find
+   (run-test-find-test-files)
+   (run-test-get-verbose-level-arg (prefix-numeric-value arg))
+   (lambda (command)
+     (compilation-start command 'run-test-mode))))
 
 (defun run-test-guess-status (string)
   (let ((case-fold-search nil)
@@ -182,25 +196,6 @@
       (if mode-line-background-color
           (set-face-background 'mode-line mode-line-background-color)))))
 
-(defadvice compilation-filter (before keep-last-marker (proc string) activate)
-  (if (buffer-name (process-buffer proc))
-      (with-current-buffer (process-buffer proc)
-        (save-excursion
-          (widen)
-          (goto-char (process-mark proc))
-          (setq run-test-last-output-start-position (point))
-          (run-test-update-mode-line string)))))
-
-(defun run-test-output-filter ()
-  (when (eq major-mode 'run-test-mode)
-    (let ((start-marker (or run-test-last-output-start (make-marker)))
-          (end-marker (process-mark (get-buffer-process (current-buffer)))))
-      (set-marker start-marker
-                  (or run-test-last-output-start-position (point-min)))
-      (ansi-color-apply-on-region start-marker end-marker))))
-
-(add-hook 'compilation-filter-hook 'run-test-output-filter)
-
 (defun run-test-restore-mode-line-color (cur-buffer msg)
   (when (eq major-mode 'run-test-mode)
     (when run-test-original-mode-line-color
@@ -215,7 +210,7 @@
                        (setq run-test-original-mode-line-color nil)))
                  run-test-original-mode-line-color))))
 
-(add-hook 'compilation-finish-functions 'run-test-restore-mode-line-color)
+(add-hook 'run-test-finish-functions 'run-test-restore-mode-line-color)
 
 (defun run-test-in-new-frame (&optional arg)
   (interactive "P")
