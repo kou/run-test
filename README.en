@@ -116,3 +116,8 @@ Happy testing!!
    ((|run-test-file|)).
    
    default: ("" ".scm" ".rb" ".py" ".sh")
+
+== Thanks
+
+  * Nobuyoshi Nakada:
+    * sent patches.

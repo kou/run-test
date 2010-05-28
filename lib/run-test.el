@@ -17,7 +17,7 @@
                                        (2 . "-vp")
                                        (3 . "-vn")
                                        (4 . "-vv"))
-  "Passed argumets to run-test-file-names for set verbose level.")
+  "passed argumets to run-test-file-names for set verbose level.")
 
 (defconst run-test-error-regexp-alist-alist
   `((ruby-test-unit-failure
@@ -26,14 +26,14 @@
 ;;      "^ +\\[?\\(\\(.+\\.rb\\):\\([0-9]+\\)\\(?::in `[^']+'\\)?\\)"
 ;;      2 3 nil nil 1)
     ,@compilation-error-regexp-alist-alist)
-  "Alist of values for `run-test-error-regexp-alist'.")
+  "alist of values for `run-test-error-regexp-alist'.")
 
 (defvar run-test-error-regexp-alist
   (mapcar 'car run-test-error-regexp-alist-alist)
-  "Alist that specifies how to match errors in compiler output.")
+  "alist that specifies how to match errors in compiler output.")
 
 (defvar run-test-mode-line-color-change-time 5
-  "Time to show test result as mode line color.")
+  "time to show test result as mode line color.")
 
 (defvar run-test-last-output-in-progress nil)
 (defvar run-test-output-status nil)
@@ -41,8 +41,8 @@
 (defvar run-test-restoring-original-mode-line-color 0)
 
 (defvar run-test-finish-functions nil
-  "Functions to call when a run-test process finishes.
-Each function is called with two arguments: the run-test buffer,
+  "functions to call when a run-test process finishes.
+each function is called with two arguments: the run-test buffer,
 and a string describing how the process finished.")
 
 (define-compilation-mode run-test-mode "run-test" "run-test-mode"
@@ -67,7 +67,7 @@ and a string describing how the process finished.")
 (defun run-test-get-verbose-level-arg (num)
   (let ((elem (assoc num run-test-verbose-level-table)))
     (if elem
-        (string-strip (concat " " (cdr elem)))
+        (concat " " (string-strip (cdr elem)))
       "")))
 
 (defun run-test-executable-file-p (file)
@@ -131,7 +131,7 @@ and a string describing how the process finished.")
                  (run-test-update-mode-line string)))))
 
 (defun run-test (&optional arg)
-  (interactive "P")
+  (interactive "p")
   (run-test-if-find
    (run-test-find-test-files)
    (run-test-get-verbose-level-arg (prefix-numeric-value arg))
@@ -143,11 +143,11 @@ and a string describing how the process finished.")
         (target-string (if (string-match "\n" string)
                            (substring string 0 (match-beginning 0))
                          string)))
-    (cond ((string-match "E" target-string) 'error)
-          ((string-match "F" target-string) 'failure)
-          ((string-match "P" target-string) 'pending)
-          ((string-match "O" target-string) 'omission)
-          ((string-match "N" target-string) 'notification)
+    (cond ((string-match "e" target-string) 'error)
+          ((string-match "f" target-string) 'failure)
+          ((string-match "p" target-string) 'pending)
+          ((string-match "o" target-string) 'omission)
+          ((string-match "n" target-string) 'notification)
           ((string-match "\\." target-string) 'success)
           (t nil))))
 
@@ -171,7 +171,7 @@ and a string describing how the process finished.")
     (and status-info (cadr status-info))))
 
 (defun run-test-remove-start-message (string)
-  (while (and (string-match "^\\(Loaded suite\\|Started\\| *\n\\)" string)
+  (while (and (string-match "^\\(loaded suite\\|started\\| *\n\\)" string)
               (zerop (match-beginning 0)))
     (if (string-match "\n" string)
         (setq string (substring string (match-end 0)))
