@@ -31,7 +31,7 @@
                                        (1 . "")
                                        (2 . "-vp")
                                        (3 . "-vn")
-                                       (4 . "-vv"))
+                                       (4 . "--verbose"))
   "passed argumets to run-test-file-names for set verbose level.")
 
 (defconst run-test-error-regexp-alist-alist
