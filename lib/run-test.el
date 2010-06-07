@@ -27,11 +27,11 @@
                               "test/runner" "run-test")
   "List of invoked file name by run-test.")
 
-(defvar run-test-verbose-level-table '((0 . "-vs")
+(defvar run-test-verbose-level-table '((0 . "--verbose=silent")
                                        (1 . "")
-                                       (2 . "-vp")
-                                       (3 . "-vn")
-                                       (4 . "--verbose"))
+                                       (2 . "--verbose=progress")
+                                       (3 . "--verbose=normal")
+                                       (4 . "--verbose=verbose"))
   "passed argumets to run-test-file-names for set verbose level.")
 
 (defconst run-test-error-regexp-alist-alist
