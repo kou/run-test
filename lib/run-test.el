@@ -116,25 +116,33 @@ and a string describing how the process finished.")
                            run-test-file-names)))
     (run-test-find-run-test-files "./" (flatten filenames))))
 
-(defun run-test-if-find (test-file-infos verbose-arg runner)
+(defun run-test-command (test-file-infos verbose-arg)
+  (while (and test-file-infos (null (car test-file-infos)))
+    (setq test-file-infos (cdr test-file-infos)))
   (cond ((null test-file-infos) nil)
-        ((car test-file-infos)
+        (t
          (let ((test-file-info (car test-file-infos)))
            (let* ((run-test-file (car test-file-info))
-                  (test-file (cdr test-file-info))
-                  (name-of-mode "run-test")
-                  (default-directory
-                    (expand-file-name
-                     (car (split-string test-file run-test-file)))))
-             (save-excursion
-               (save-some-buffers)
-               (funcall runner
-                        (concat (concat "./"
-                                        (file-name-directory run-test-file))
-                                (file-name-nondirectory test-file)
-                                verbose-arg)))
-             t)))
-        (t (run-test-if-find (cdr test-file-infos) verbose-arg runner))))
+                  (test-file (cdr test-file-info)))
+	     (list
+	      (concat (concat "./"
+			      (file-name-directory run-test-file))
+		      (file-name-nondirectory test-file)
+		      verbose-arg)
+	      (expand-file-name
+	       (car (split-string test-file run-test-file)))))))))
+
+(defun run-test-read-command (&optional arg)
+  (let* ((default
+	   (run-test-command (run-test-find-test-files)
+			     (run-test-get-verbose-level-arg
+			      (prefix-numeric-value arg))))
+	 (command (car default))
+	 (directory (cadr default)))
+    (when arg
+      (setq command (read-string "Run test command: " command)
+	    directory (read-directory-name "In directory: " directory)))
+    (list command directory)))
 
 (defun run-test-setup-buffer ()
   (make-local-variable 'compilation-filter-hook)
@@ -144,14 +152,6 @@ and a string describing how the process finished.")
                  (ansi-color-apply-on-region (- current (string-bytes string))
                                              current)
                  (run-test-update-mode-line string)))))
-
-(defun run-test (&optional arg)
-  (interactive "p")
-  (run-test-if-find
-   (run-test-find-test-files)
-   (run-test-get-verbose-level-arg (prefix-numeric-value arg))
-   (lambda (command)
-     (compilation-start command 'run-test-mode))))
 
 (defun run-test-guess-status (string)
   (let ((case-fold-search nil)
@@ -244,11 +244,21 @@ and a string describing how the process finished.")
       (other-frame -1)
       (select-frame current-frame))))
 
-(defun run-test-in-mini-buffer (&optional arg)
-  (interactive "P")
-  (run-test-if-find (find-test-files)
-                    (run-test-get-verbose-level-arg (prefix-numeric-value arg))
-                    (lambda (command)
-                      (shell-command command))))
+(defmacro run-test-command-start (directory &rest command)
+  `(let ((name-of-mode "run-test")
+	 (default-directory ,directory))
+     (save-excursion
+       (save-some-buffers)
+       ,@command)))
+
+(defun run-test (command directory)
+  (interactive (run-test-read-command current-prefix-arg))
+  (run-test-command-start directory
+    (compilation-start command 'run-test-mode)))
+
+(defun run-test-in-mini-buffer (command directory)
+  (interactive (run-test-read-command current-prefix-arg))
+  (run-test-command-start directory
+    (shell-command command)))
 
 (provide 'run-test)
