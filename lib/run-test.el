@@ -60,6 +60,9 @@
 each function is called with two arguments: the run-test buffer,
 and a string describing how the process finished.")
 
+(defvar run-test-command-history nil
+  "history of run-test commands.")
+
 (define-compilation-mode run-test-mode "run-test" "run-test-mode"
   (set (make-local-variable 'run-test-last-output-in-progress) t)
   (set (make-local-variable 'run-test-output-status) 'success)
@@ -90,7 +93,9 @@ and a string describing how the process finished.")
        (not (file-directory-p test-file))))
 
 (defun run-test-find-run-test-files-in-directory (directory filenames)
-  (mapcar (lambda (filename)
+  (let ((tests
+	 (mapcar
+	  (lambda (filename)
             (do ((test-file (concat directory filename)
                             (concat "../" test-file))
                  (rest-dir filename (and (string-match "\/\(.*\)" rest-dir)
@@ -101,6 +106,14 @@ and a string describing how the process finished.")
                      (cons filename test-file)
                    nil))))
           filenames))
+	(compact
+	 (lambda (list)
+	   (cond ((null list) nil)
+		 ((car list)
+		  (setcdr list (funcall compact (cdr list)))
+		  list)
+		 ((funcall compact (cdr list)))))))
+    (funcall compact tests)))
 
 (defun run-test-find-run-test-files (directory filenames)
   (if (string= "/" (expand-file-name directory))
@@ -117,8 +130,6 @@ and a string describing how the process finished.")
     (run-test-find-run-test-files "./" (flatten filenames))))
 
 (defun run-test-command (test-file-infos verbose-arg)
-  (while (and test-file-infos (null (car test-file-infos)))
-    (setq test-file-infos (cdr test-file-infos)))
   (cond ((null test-file-infos) nil)
         (t
          (let ((test-file-info (car test-file-infos)))
@@ -140,7 +151,8 @@ and a string describing how the process finished.")
 	 (command (car default))
 	 (directory (cadr default)))
     (when arg
-      (setq command (read-string "Run test command: " command)
+      (setq command (read-string "Run test command: " command
+                                 'run-test-command-history)
 	    directory (read-directory-name "In directory: " directory)))
     (list command directory)))
 
