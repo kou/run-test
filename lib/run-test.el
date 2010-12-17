@@ -20,7 +20,7 @@
 (defconst run-test-version "0.0.2"
   "Version numbers of this version of run-test.el.")
 
-(defvar run-test-suffixes '("" ".scm" ".rb" ".py" ".sh")
+(defvar run-test-suffixes '("" ".sh" ".scm" ".rb" ".py")
   "List of test file suffix.")
 
 (defvar run-test-file-names '("test/run-test" "tests/run-test"
