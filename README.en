@@ -22,9 +22,7 @@ An Emacs-Lisp which suports running tests.
 
 == Get
 
-((<URL:http://www.cozmixng.org/~kou/download/run-test.tar.gz>))
-
-  % svn co http://www.cozmixng.org/repos/elisp/run-test/trunk run-test
+  % git clone https://github.com/kou/run-test.git
 
 == Install
 

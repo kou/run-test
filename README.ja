@@ -22,9 +22,7 @@ GPLv3 or later
 
 == 入手方法
 
-((<URL:http://www.cozmixng.org/~kou/download/run-test.tar.gz>))
-
-  % svn co http://www.cozmixng.org/repos/elisp/run-test/trunk run-test
+  % git clone https://github.com/kou/run-test.git
 
 == インストール
 
@@ -43,7 +41,7 @@ lib/run-test.elはEmacs上でのテストの実行を支援するEmacs-Lisp
 使うには，まず，.emacsに以下を記述します．
 
   (setq load-path (cons run-test{,-setting}.elがあるディレクトリ load-path))
-  (load "run-test-setting")
+  (require 'run-test-setting)
 
 ここでは
 ((<GaUnit|URL:http://www.cozmixng.org/~rwiki/?cmd=view;name=GaUnit>))
