@@ -1,4 +1,4 @@
-;;; Copyright (C) 2008-2010  Kouhei Sutou <kou@cozmixng.org>
+;;; Copyright (C) 2008-2011  Kouhei Sutou <kou@cozmixng.org>
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -22,3 +22,5 @@
 (define-key global-map "\C-c\C-t" 'run-test)
 (define-key global-map "\C-cT" 'run-test-in-new-frame)
 (define-key global-map "\C-[\M-\C-t" 'run-test-in-mini-buffer)
+
+(provide 'run-test-setting)
